@@ -41,7 +41,7 @@ services:
     networks: 
     - roboshop
   shipping: 
-    image: shipping:v1
+    image: shipping:v2
     container_name: shipping
     networks: 
     - roboshop
