@@ -1,12 +1,24 @@
 networks: 
   roboshop: 
     driver: bridge
+
+volumes: 
+  mongodb:
+  redis: 
+  mysql: 
+  rabbitmq:
+
 services: 
   mongodb: 
     image: nishaldevops/mongodb:v1
     container_name: mongodb
     networks: 
     - roboshop
+    volumes: 
+    - source: mongodb
+      target: /data/db
+      type: volume
+
   catalogue: 
     image: nishaldevops/catalogue:v1
     container_name: catalogue
@@ -14,11 +26,18 @@ services:
     - roboshop
     depends_on: 
     - mongodb
+
   redis: 
     image: redis
     container_name: redis
     networks: 
     - roboshop
+    volumes: 
+    - source: redis
+      target: /data
+      type: volume
+
+
   user: 
     image: nishaldevops/user:v1
     container_name: user
@@ -27,6 +46,7 @@ services:
     depends_on: 
     - mongodb
     - redis
+
   cart: 
     image: nishaldevops/cart:v1
     container_name: cart
@@ -35,11 +55,17 @@ services:
     depends_on: 
     - catalogue
     - redis
+
   mysql: 
     image: nishaldevops/mysql:v1
     container_name: mysql
     networks: 
     - roboshop
+    volumes: 
+    - source: mysql
+      target: /var/lib/mysql
+      type: volume
+
   shipping: 
     image: nishaldevops/shipping:v1
     container_name: shipping
@@ -48,14 +74,20 @@ services:
     depends_on: 
     - cart
     - mysql
+
   rabbitmq: 
     image: rabbitmq
     container_name: rabbitmq
     networks: 
     - roboshop
+    volumes: 
+    - source: rabbitmq
+      target: /var/lib/rabbitmq
+      type: volume
     environment: 
     - RABBITMQ_DEFAULT_USER=roboshop
     - RABBITMQ_DEFAULT_PASS=roboshop123
+
   payment: 
     image: nishaldevops/payment:v1
     container_name: payment
